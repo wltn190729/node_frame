@@ -1,0 +1,28 @@
+{
+  "name": "node_express_hagun",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon app",
+    "src": "nodemon src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.wheeparam.com/Shin-hyun-min/node_express_hagun.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express-fileupload": "^1.4.0",
+    "expresss": "^0.0.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.20",
+    "sequelize": "^6.25.8"
+  }
+}
