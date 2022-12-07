@@ -22,6 +22,17 @@ app.use(
   })
 );
 
+// 장단점
+/*
+1. index.js 한번에 때려박기
+- 헷갈려
+- 가독성은 높아
+
+2. 모든 router들에 선언을 따로 해주기
+ - 안 헷갈려
+- 가독성이 떨어진다
+*/
+
 /** Rest API 사용을 위한 설정  **/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
