@@ -1,11 +1,11 @@
 {
-  "development": {
-    "username" : "root",
-    "password": "1234",
-    "database": "weddinglog_test",
-    "host": "localhost",
-    "port": "3307",
-    "dialect": "mysql",
-    "operatorsAliases": false
-  }
+	"development": {
+		"username": "hagunbiz",
+		"password": "gkrns!@#",
+		"database": "hagun_admin",
+		"host": "115.68.185.124",
+		"port": "3306",
+		"dialect": "mysql",
+		"operatorsAliases": false
+	}
 }
