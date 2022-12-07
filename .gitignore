@@ -1,6 +1,6 @@
 # Default ignored files
 
-node_modules
-config/*
+/node_modules
+/config/*
 
 package-lock.json
