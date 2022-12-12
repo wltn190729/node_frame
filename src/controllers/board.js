@@ -240,7 +240,135 @@ module.exports = {
     },
 
     async createCommentOne (req, res) {
-        return res.status(200).json({result: true, message: "success"});
+        const key = req.params.key ? req.params.key : '';
+        const id = req.params.id ? req.params.id : '';
+        const nickname = req.body.hasOwnProperty('nickname') ? req.body.nickname : '';
+        const password = req.body.hasOwnProperty('password') ? req.body.password : '';
+        const content = req.body.hasOwnProperty('content') ? req.body.content : '';
+        const inquiry = req.body.hasOwnProperty('inquiry') ? req.body.inquiry : -1;
+        const depth = req.body.hasOwnProperty('depth') ? req.body.depth : 0;
+        const reg_user = req.body.hasOwnProperty('reg_user') ? req.body.reg_user : 0;
+
+        const [KeyResult, boardField] = await db.query(`SELECT brd_key FROM BOARD WHERE brd_key='${key}'`);
+        //게시판 키 값이 없을 때
+        if (KeyResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 키 값 입니다.'});
+        }
+
+        const [IdResult, IdField] = await db.query(`SELECT post_idx FROM BOARD_POST WHERE post_idx='${id}'`);
+        //게시글 아이디 값이 없을 때
+        if (IdResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 게시글 키 값 입니다.'});
+        }
+
+        let insertSQL = `INSERT INTO BOARD_COMMENT 
+                            (post_idx, com_inquiry_pt, com_depth, com_nickname, com_password,
+                            com_content, com_status, com_reg_user, com_reg_dt, com_ip) 
+                         VALUES (?,?,?,?,?,?,?,?,?,?)`;
+
+        let bindList = [id, inquiry, depth, nickname, password, content, 'Y', reg_user, getDate(), 0];
+
+        try {
+            await db.query(insertSQL, bindList);
+            return res.status(200).json({result: true, message: "success"});
+        } catch (e) {
+            console.log(e);
+            return res.status(401).json({result: false, message: '데이터베이스 오류입니다.'});
+        }
+    },
+
+    async updateCommentOne (req, res) {
+        const key = req.params.key ? req.params.key : '';
+        const id = req.params.id ? req.params.id : '';
+        const cid = req.params.cid ? req.params.cid : '';
+        const nickname = req.body.hasOwnProperty('nickname') ? req.body.nickname : '';
+        const content = req.body.hasOwnProperty('content') ? req.body.content : '';
+
+        const [KeyResult, boardField] = await db.query(`SELECT brd_key FROM BOARD WHERE brd_key='${key}'`);
+        //게시판 키 값이 없을 때
+        if (KeyResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 키 값 입니다.'});
+        }
+
+        const [IdResult, IdField] = await db.query(`SELECT post_idx FROM BOARD_POST WHERE post_idx='${id}'`);
+        //게시글 아이디 값이 없을 때
+        if (IdResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 게시글 값 입니다.'});
+        }
+
+        let sqlOpt = [];
+
+        if (nickname) sqlOpt.push(`com_nickname='${nickname}'`)
+        if (content) sqlOpt.push(`com_content='${content}'`)
+        sqlOpt.push(`com_upd_dt='${getDate()}'`)
+
+        let sql = `UPDATE BOARD_COMMENT SET `
+        sql += sqlOpt.join(",");
+        sql += ` WHERE com_idx='${cid}'`;
+
+        try {
+            await db.query(sql)
+            return res.status(200).json({result: true, message: "success"});
+        } catch (e) {
+            return res.status(401).json({result: false, message: '데이터베이스 오류입니다.'});
+        }
+
+    },
+
+    async deleteCommentOne (req, res) {
+        const key = req.params.key ? req.params.key : '';
+        const id = req.params.id ? req.params.id : '';
+        const cid = req.params.cid ? req.params.cid : '';
+
+        const [KeyResult, boardField] = await db.query(`SELECT brd_key FROM BOARD WHERE brd_key='${key}'`);
+        //게시판 키 값이 없을 때
+        if (KeyResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 키 값 입니다.'});
+        }
+
+        const [IdResult, IdField] = await db.query(`SELECT post_idx FROM BOARD_POST WHERE post_idx='${id}'`);
+        //게시글 아이디 값이 없을 때
+        if (IdResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 게시글 값 입니다.'});
+        }
+
+        const [cidResult, cidField] = await db.query(`SELECT com_idx FROM BOARD_COMMENT WHERE com_idx='${cid}'`);
+        //게시글 아이디 값이 없을 때
+        if (cidResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 댓글 값 입니다.'});
+        }
+
+        try {
+            await db.query(`DELETE FROM BOARD_COMMENT WHERE com_idx='${cid}'`)
+            return res.status(200).json({result: true, message: "success"});
+        } catch (e) {
+            return res.status(401).json({result: false, message: '데이터베이스 오류입니다.'});
+        }
+
+
+    },
+
+    async getComments(req, res) {
+        const key = req.params.key ? req.params.key : '';
+        const id = req.params.id ? req.params.id : '';
+
+        const [KeyResult, boardField] = await db.query(`SELECT brd_key FROM BOARD WHERE brd_key='${key}'`);
+        //게시판 키 값이 없을 때
+        if (KeyResult[0] === undefined) {
+            return res.status(400).json({result: false, message: '존재하지 않는 키 값 입니다.'});
+        }
+
+        let selectSQL = `SELECT * FROM BOARD_COMMENT 
+                            WHERE post_idx='${id}' 
+                            ORDER BY com_depth, com_reg_dt`;
+
+        try {
+            [result, resultField] = await db.query(selectSQL)
+            return res.status(200).json(result);
+        } catch (e) {
+            return res.status(401).json({result: false, message: '데이터베이스 오류입니다.'});
+        }
+
     }
 
 }

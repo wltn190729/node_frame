@@ -19,6 +19,12 @@ router.delete('/:key/posts/:id', boardController.deletePostOne);
 
 router.post('/:key/posts/:id/comments', boardController.createCommentOne);
 
+router.get('/:key/posts/:id/comments', boardController.getComments);
+
+router.patch('/:key/posts/:id/comments/:cid', boardController.updateCommentOne);
+
+router.delete('/:key/posts/:id/comments/:cid', boardController.deleteCommentOne);
+
 
 
 module.exports = router;
