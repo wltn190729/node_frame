@@ -2,7 +2,9 @@
 const router = require("express").Router();
 const homeController = require("../controllers/home");
 
-router.use("/", homeController.home);
+router.get("/", homeController.home);
+router.use('/board', require('./boardRoutes.js'));
+
 
 // 객체 Export
 module.exports = router;
